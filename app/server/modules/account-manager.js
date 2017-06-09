@@ -12,7 +12,7 @@ var dbPort = process.env.DB_PORT || 27017;
 var dbName = process.env.DB_NAME || 'touchberrykey';
 
 if (process.env.DB_ENV == 'mongodb.atlas') {
-	var dbHost = process.env.DB_HOST || 'cluster0-shard-00-01-smsp4.mongodb.net'
+	var dbHost = process.env.DB_HOST || 'cluster0-shard-00-00-smsp4.mongodb.net'
 	var dbUser = process.env.DB_USER || 'touchberry'
 	var dbPass = process.env.DB_PASS || 'touchberry!'
 	var sslEnabled = true;
