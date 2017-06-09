@@ -27,15 +27,25 @@ app.use(express.static(__dirname + '/app/public'));
 
 // build mongo database connection url //
 
-var dbHost = process.env.DB_HOST || 'localhost'
+var dbENV = process.env.DB_ENV || 'localhost';
 var dbPort = process.env.DB_PORT || 27017;
-var dbName = process.env.DB_NAME || 'node-login';
+var dbName = process.env.DB_NAME || 'touchberrykey';
 
-var dbURL = 'mongodb://'+dbHost+':'+dbPort+'/'+dbName;
-if (app.get('env') == 'live'){
-// prepend url with authentication credentials // 
-	dbURL = 'mongodb://'+process.env.DB_USER+':'+process.env.DB_PASS+'@'+dbHost+':'+dbPort+'/'+dbName;
+if (process.env.DB_ENV == 'mongodb.atlas') {
+	var dbHost = process.env.DB_HOST || 'cluster0-shard-00-01-smsp4.mongodb.net'
+	var dbUser = process.env.DB_USER || 'touchberry'
+	var dbPass = process.env.DB_PASS || 'touchberry!'
+	var dbURL = 'mongodb://'+ dbUser +':'+dbPass+'@'+ dbHost +':'+ dbPort + '/' + dbName + '?ssl=true&replicaSet=Cluster0-shard-0&authSource=admin';
+
 }
+else {
+	var dbHost = process.env.DB_HOST || 'localhost'
+	var dbURL = 'mongodb://'+dbHost+':'+dbPort+'/'+dbName;
+}
+
+dbURL = 'mongodb://touchberry:touchberry!@cluster0-shard-00-00-smsp4.mongodb.net:27017,cluster0-shard-00-01-smsp4.mongodb.net:27017,cluster0-shard-00-02-smsp4.mongodb.net:27017/node-login?ssl=true&replicaSet=Cluster0-shard-0&authSource=admin';
+
+console.log(dbURL);
 
 app.use(session({
 	secret: 'faeb4453e5d14fe6f6d04637f78077c76c73d1b4',

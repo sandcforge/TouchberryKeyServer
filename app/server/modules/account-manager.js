@@ -7,18 +7,28 @@ var moment 		= require('moment');
 /*
 	ESTABLISH DATABASE CONNECTION
 */
-
-var dbName = process.env.DB_NAME || 'node-login';
-var dbHost = process.env.DB_HOST || 'localhost'
+var dbENV = process.env.DB_ENV || 'localhost';
 var dbPort = process.env.DB_PORT || 27017;
+var dbName = process.env.DB_NAME || 'touchberrykey';
 
-var db = new MongoDB(dbName, new Server(dbHost, dbPort, {auto_reconnect: true}), {w: 1});
+if (process.env.DB_ENV == 'mongodb.atlas') {
+	var dbHost = process.env.DB_HOST || 'cluster0-shard-00-01-smsp4.mongodb.net'
+	var dbUser = process.env.DB_USER || 'touchberry'
+	var dbPass = process.env.DB_PASS || 'touchberry!'
+	var sslEnabled = true;
+}
+else {
+	var dbHost = process.env.DB_HOST || 'localhost'
+	var sslEnabled = false;
+}
+
+var db = new MongoDB(dbName, new Server(dbHost, dbPort, {ssl:sslEnabled, auto_reconnect: true}), {w: 1});
 db.open(function(e, d){
 	if (e) {
 		console.log(e);
 	} else {
-		if (process.env.NODE_ENV == 'live') {
-			db.authenticate(process.env.DB_USER, process.env.DB_PASS, function(e, res) {
+		if (process.env.DB_ENV == 'mongodb.atlas') {
+			db.admin().authenticate(dbUser, dbPass, function(e, res) {
 				if (e) {
 					console.log('mongo :: error: not authenticated', e);
 				}
