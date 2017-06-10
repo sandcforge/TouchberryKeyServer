@@ -43,8 +43,6 @@ else {
 	var dbURL = 'mongodb://'+dbHost+':'+dbPort+'/'+dbName;
 }
 
-dbURL = 'mongodb://touchberry:touchberry!@cluster0-shard-00-00-smsp4.mongodb.net:27017,cluster0-shard-00-01-smsp4.mongodb.net:27017,cluster0-shard-00-02-smsp4.mongodb.net:27017/node-login?ssl=true&replicaSet=Cluster0-shard-0&authSource=admin';
-
 console.log(dbURL);
 
 app.use(session({
