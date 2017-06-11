@@ -11,15 +11,8 @@ var MongoStore = require('connect-mongo')(session);
 var app = express();
 
 app.locals.pretty = true;
-if ( process.env.NODE_ENV == 'prod' ) {
-		app.set('http_port', process.env.HTTP_PORT || 80);
-		app.set('https_port', process.env.HTTPS_PORT || 443);
-}
-else {
-	app.set('http_port', process.env.HTTP_PORT || 3000);
-	app.set('https_port', process.env.HTTPS_PORT || 3210);
-}
-
+app.set('http_port', process.env.HTTP_PORT || 80);
+app.set('https_port', process.env.HTTPS_PORT || 443);
 app.set('views', __dirname + '/app/server/views');
 app.set('view engine', 'jade');
 app.use(cookieParser());
