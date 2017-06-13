@@ -9,7 +9,6 @@ var cookieParser = require('cookie-parser');
 var MongoStore = require('connect-mongo')(session);
 
 var app = express();
-
 app.locals.pretty = true;
 app.set('http_port', process.env.HTTP_PORT || 80);
 app.set('https_port', process.env.HTTPS_PORT || 443);
@@ -21,12 +20,27 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(require('stylus').middleware({ src: __dirname + '/app/public' }));
 app.use(express.static(__dirname + '/app/public'));
 
+
+function approveDomains(opts, certs, cb) {
+  if (certs) {
+    opts.domains = ['server.touchberrykey.ga'];
+  }
+  else {
+    opts.email = 'sandcforge@gmail.com';
+    opts.agreeTos = true;
+  }
+  cb(null, { options: opts, certs: certs });
+}
+
 //Get SSL required certificates
 if ( process.env.NODE_ENV == 'prod' ) {
-	https_options = {
-		key: fs.readFileSync('./.ssl/private.key'),
-		cert: fs.readFileSync('./.ssl/certificate.pem')
-	}
+	var lex = require('greenlock-express').create({
+		//server: 'staging',
+		server: 'https://acme-v01.api.letsencrypt.org/directory',
+		challenges: { 'http-01': require('le-challenge-fs').create({ webrootPath: '/tmp/acme-challenges' }) },
+		store: require('le-store-certbot').create({ webrootPath: '/tmp/acme-challenges' }),
+		approveDomains: approveDomains
+	});
 }
 else {
 	https_options = {
@@ -65,11 +79,22 @@ app.use(session({
 );
 
 require('./app/server/routes')(app);
+if ( process.env.NODE_ENV == 'prod') {
+	require('http').createServer(lex.middleware(require('redirect-https')())).listen(80, function () {
+		console.log('Express HTTP server listening on port ' + app.get('http_port'));
+	});
 
-http.createServer(app).listen(app.get('http_port'), function(){
-	console.log('Express HTTP server listening on port ' + app.get('http_port'));
-});
+	require('https').createServer(lex.httpsOptions, lex.middleware(app)).listen(443, function () {
+		console.log('Express HTTPS server listening on port ' + app.get('https_port'));
+	});
+}
+else {
+	http.createServer(app).listen(app.get('http_port'), function(){
+		console.log('Express HTTP server listening on port ' + app.get('http_port'));
+	});
 
-https.createServer(https_options,app).listen(app.get('https_port'), function(){
-	console.log('Express HTTPS server listening on port ' + app.get('https_port'));
-});
+	https.createServer(https_options,app).listen(app.get('https_port'), function(){
+		console.log('Express HTTPS server listening on port ' + app.get('https_port'));
+	});
+
+}
