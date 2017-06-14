@@ -3,41 +3,36 @@ var crypto 		= require('crypto');
 var MongoDB 	= require('mongodb').Db;
 var Server 		= require('mongodb').Server;
 var moment 		= require('moment');
+var envConfig = require('./../../../config');
 
 /*
 	ESTABLISH DATABASE CONNECTION
 */
-var dbENV = process.env.DB_ENV || 'localhost';
-var dbPort = process.env.DB_PORT || 27017;
-var dbName = process.env.DB_NAME || 'touchberrykey';
 
-if (process.env.DB_ENV == 'mongodb.atlas') {
-	var dbHost = process.env.DB_HOST || 'cluster0-shard-00-00-smsp4.mongodb.net'
-	var dbUser = process.env.DB_USER || 'touchberry'
-	var dbPass = process.env.DB_PASS || 'touchberry!'
+
+if (envConfig.dbEnv == 'mongodb.atlas') {
 	var sslEnabled = true;
 }
 else {
-	var dbHost = process.env.DB_HOST || 'localhost'
 	var sslEnabled = false;
 }
 
-var db = new MongoDB(dbName, new Server(dbHost, dbPort, {ssl:sslEnabled, auto_reconnect: true}), {w: 1});
+var db = new MongoDB(envConfig.dbName, new Server(envConfig.dbHost, envConfig.dbPort, {ssl:sslEnabled, auto_reconnect: true}), {w: 1});
 db.open(function(e, d){
 	if (e) {
 		console.log(e);
 	} else {
-		if (process.env.DB_ENV == 'mongodb.atlas') {
-			db.admin().authenticate(dbUser, dbPass, function(e, res) {
+		if (envConfig.dbEnv == 'mongodb.atlas') {
+			db.admin().authenticate(envConfig.dbUser, envConfig.dbPass, function(e, res) {
 				if (e) {
 					console.log('mongo :: error: not authenticated', e);
 				}
 				else {
-					console.log('mongo :: authenticated and connected to database :: "'+dbName+'"');
+					console.log('mongo :: authenticated and connected to database :: "'+envConfig.dbName+'"');
 				}
 			});
 		}	else{
-			console.log('mongo :: connected to database :: "'+dbName+'"');
+			console.log('mongo :: connected to database :: "'+envConfig.dbName+'"');
 		}
 	}
 });
