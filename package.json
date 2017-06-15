@@ -1,10 +1,10 @@
 {
   "name": "touchberrykey",
   "version": "0.0.1",
-  "description": "A template for quickly building login systems on top of Node.js & MongoDb",
-  "author": "Stephen Braitsch <stephen@braitsch.io>",
+  "description": "TouchberryKey Server",
+  "author": "SandCForge <sandcforge@gmail.com>",
   "website": {
-    "url": "http://touchberry.com"
+    "url": "https://touchberry.com"
   },
   "repository": {
     "type": "git",
