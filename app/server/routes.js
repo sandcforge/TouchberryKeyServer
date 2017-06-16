@@ -186,7 +186,11 @@ module.exports = function(app) {
 
 
 	app.get('/index', function(req, res) {
-		res.render('index', { title: 'Express', foo: {bar:'baz'} });
+		res.render('pages/MainPage', { title: 'Express', foo: {userAgent: req.headers['user-agent'] } });
+	});
+
+	app.get('/about', function(req, res) {
+		res.render('pages/PrivacyPolicyPage', { title: 'Express', foo: {userAgent: req.headers['user-agent'] } });
 	});
 
 
