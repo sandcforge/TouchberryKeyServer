@@ -13,8 +13,11 @@ var app = express();
 app.locals.pretty = true;
 app.set('http_port', envConfig.httpPort);
 app.set('https_port', envConfig.httpsPort);
-app.set('views', __dirname + '/app/server/views');
-app.set('view engine', 'jade');
+
+app.set('views', __dirname + '/app/reactviews');
+app.set('view engine', 'jsx');
+app.engine('jsx', require('express-react-views').createEngine());
+
 app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
