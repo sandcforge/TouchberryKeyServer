@@ -27,7 +27,7 @@ app.use(express.static(__dirname + '/app/public'));
 
 function approveDomains(opts, certs, cb) {
   if (certs) {
-    opts.domains = ['server.touchberrykey.ga'];
+    opts.domains = ['www.touchberrykey.ga','touchberrykey.ga'];
   }
   else {
     opts.email = 'sandcforge@gmail.com';
