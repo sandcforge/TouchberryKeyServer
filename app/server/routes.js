@@ -1,6 +1,7 @@
 
 var CT = require('./modules/country-list');
 var AM = require('./modules/account-manager');
+var TM = require('./modules/theme-manager');
 var EM = require('./modules/email-dispatcher');
 
 module.exports = function(app) {
@@ -38,11 +39,21 @@ module.exports = function(app) {
 		});
 	});
 
+	app.post('/theme', function(req, res){
+	  TM.addNewTheme(req.body, function(e, o){
+	      if (!o){
+	        res.status(400).send(e);
+	      }	else{
+	        res.status(200).send(o);
+	      }
+	  });
+	});
+
   // logged-in user homepage //
 
 	app.get('/home', function(req, res) {
 		if (req.session.user == null){
-	// if user is not logged-in redirect back to login page //
+			// if user is not logged-in redirect back to login page //
 			res.redirect('/');
 		}	else{
 			res.render('home', {

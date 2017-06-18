@@ -14,9 +14,15 @@ app.locals.pretty = true;
 app.set('http_port', envConfig.httpPort);
 app.set('https_port', envConfig.httpsPort);
 
-app.set('views', __dirname + '/app/reactviews');
-app.set('view engine', 'jsx');
-app.engine('jsx', require('express-react-views').createEngine());
+if (0) {
+  app.set('views', __dirname + '/app/reactviews');
+  app.set('view engine', 'jsx');
+  app.engine('jsx', require('express-react-views').createEngine());
+}
+else {
+  app.set('views', __dirname + '/app/server/views');
+  app.set('view engine', 'jade');
+}
 
 app.use(cookieParser());
 app.use(bodyParser.json());
