@@ -39,7 +39,8 @@ module.exports = function(app) {
 		});
 	});
 
-	app.post('/theme', function(req, res){
+
+	app.post('/theme/post', function(req, res){
 	  TM.addNewTheme(req.body, function(e, o){
 	      if (!o){
 	        res.status(400).send(e);
@@ -47,6 +48,26 @@ module.exports = function(app) {
 	        res.status(200).send(o);
 	      }
 	  });
+	});
+
+	//e.g. http://localhost/theme/get?addr=123435t
+	app.get('/theme/get', function(req, res){
+		if (req.query.addr) {
+			TM.getTheme(req.query.addr, function(e,o) {
+				if (!e) res.status(200).send(o);
+				else res.status(400).send('db err');
+			});
+		}
+		else { res.status(400).send('null addr'); }
+		/*
+	  TM.addNewTheme(req.body, function(e, o){
+	      if (!o){
+	        res.status(400).send(e);
+	      }	else{
+	        res.status(200).send(o);
+	      }
+	  });
+		*/
 	});
 
   // logged-in user homepage //
@@ -121,7 +142,7 @@ module.exports = function(app) {
   // password reset //
 
 	app.post('/lost-password', function(req, res){
-	// look up the user's account via their email //
+		// look up the user's account via their email //
 		AM.getAccountByEmail(req.body['email'], function(o){
 			if (o){
 				EM.dispatchResetPasswordLink(o, function(e, m){

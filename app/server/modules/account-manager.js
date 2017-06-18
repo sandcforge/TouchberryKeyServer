@@ -1,10 +1,8 @@
-
 var crypto 		= require('crypto');
-var MongoDB 	= require('mongodb').Db;
-var Server 		= require('mongodb').Server;
 var moment 		= require('moment');
 var envConfig = require('./../../../config');
 var accounts = require('./db-connection').accounts;
+var dbApi = require('./db-api');
 /* login validation methods */
 
 exports.autoLogin = function(user, pass, callback)
@@ -61,7 +59,7 @@ exports.addNewAccount = function(newData, callback)
 
 exports.updateAccount = function(newData, callback)
 {
-	accounts.findOne({_id:getObjectId(newData.id)}, function(e, o){
+	accounts.findOne({_id:dbApi.getObjectId(newData.id)}, function(e, o){
 		o.name 		= newData.name;
 		o.email 	= newData.email;
 		o.country 	= newData.country;
@@ -100,7 +98,7 @@ exports.updatePassword = function(email, newPass, callback)
 
 exports.deleteAccount = function(id, callback)
 {
-	accounts.remove({_id: getObjectId(id)}, callback);
+	accounts.remove({_id: dbApi.getObjectId(id)}, callback);
 }
 
 exports.getAccountByEmail = function(email, callback)
@@ -157,28 +155,4 @@ var validatePassword = function(plainPass, hashedPass, callback)
 	var salt = hashedPass.substr(0, 10);
 	var validHash = salt + md5(plainPass + salt);
 	callback(null, hashedPass === validHash);
-}
-
-var getObjectId = function(id)
-{
-	return new require('mongodb').ObjectID(id);
-}
-
-var findById = function(id, callback)
-{
-	accounts.findOne({_id: getObjectId(id)},
-		function(e, res) {
-		if (e) callback(e)
-		else callback(null, res)
-	});
-}
-
-var findByMultipleFields = function(a, callback)
-{
-// this takes an array of name/val pairs to search against {fieldName : 'value'} //
-	accounts.find( { $or : a } ).toArray(
-		function(e, results) {
-		if (e) callback(e)
-		else callback(null, results)
-	});
 }
