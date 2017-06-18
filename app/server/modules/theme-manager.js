@@ -6,7 +6,7 @@ var dbApi = require('./db-api');
 /* record insertion, update & deletion methods */
 exports.addNewTheme = function(newData, callback)
 {
-	newData.date = moment().format('MMMM Do YYYY, h:mm:ss a');
+	newData.timestamp = moment().format('MM-DD-YYYY HH:mm:ss');
 	themes.insert(newData, function(e,ret) {
 		if (e) callback(e, null);
 		else callback(null, ret.insertedIds);
@@ -18,7 +18,11 @@ exports.getTheme = function(id, callback)
 	themes.findOne({_id:dbApi.getObjectId(id)}, function(e, o){
 		if (e) callback(e);
 		else {
-			callback(null,o);
+			let currentTime = moment();
+			let themeTime = moment(o.timestamp);
+			let themeDuration = o.duration || envConfig.defaultThemeDuration;
+			if ( currentTime.diff(themeTime, 'days') > themeDuration ) callback('theme expired');
+			else callback(null,o);
 		}
 	});
 }
@@ -28,9 +32,9 @@ exports.updateTheme = function(newData, callback)
 	themes.findOne({_id:dbApi.getObjectId(newData.id)}, function(e, o){
 		if (e) callback(e);
 		else {
-			o.user 		= newData.user;
+			o.user 	= newData.user;
 			o.pass 	= newData.pass;
-			o.date = moment().format('MMMM Do YYYY, h:mm:ss a');
+			o.timestamp  = moment().format('MMMM Do YYYY, h:mm:ss a');
 			themes.save(o, {safe: true}, function(e) {
 					if (e) callback(e);
 					else callback(null, o);

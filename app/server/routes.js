@@ -55,7 +55,7 @@ module.exports = function(app) {
 		if (req.query.addr) {
 			TM.getTheme(req.query.addr, function(e,o) {
 				if (!e) res.status(200).send(o);
-				else res.status(400).send('db err');
+				else res.status(400).send(e);
 			});
 		}
 		else { res.status(400).send('null addr'); }

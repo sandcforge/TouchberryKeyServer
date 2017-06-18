@@ -35,6 +35,7 @@ envConfig = {
   dbUser:    dbUser,
   dbPass:    dbPass,
 	dbURL:     dbURL,
+	defaultThemeDuration: 3 //3 days
 }
 
 module.exports = envConfig;
