@@ -41,13 +41,29 @@ module.exports = function(app) {
 
 
 	app.post('/theme/post', function(req, res){
-	  TM.addNewTheme(req.body, function(e, o){
-	      if (!o){
-	        res.status(400).send(e);
-	      }	else{
-	        res.status(200).send(o);
-	      }
-	  });
+
+		// check if the user's credentials are saved in a cookie //
+			if (req.cookies.user == undefined || req.cookies.pass == undefined){
+				res.status(400).send('not login');
+			}	else{
+				// attempt automatic login //
+				AM.autoLogin(req.cookies.user, req.cookies.pass, function(o){
+					if (o != null){
+							req.session.user = o;
+							req.body.owner = o._id;
+							//console.log(req.body);
+							TM.addNewTheme(req.body, function(e, o){
+					      if (!o){
+					        res.status(400).send(e);
+					      }	else{
+					        res.status(200).send(o);
+					      }
+						  });
+					}	else{
+						res.status(400).send('not login');
+					}
+				});
+			}
 	});
 
 	//e.g. http://localhost/theme/get?addr=123435t
@@ -58,20 +74,12 @@ module.exports = function(app) {
 				else res.status(400).send(e);
 			});
 		}
-		else { res.status(400).send('null addr'); }
-		/*
-	  TM.addNewTheme(req.body, function(e, o){
-	      if (!o){
-	        res.status(400).send(e);
-	      }	else{
-	        res.status(200).send(o);
-	      }
-	  });
-		*/
+		else {
+			res.status(400).send('null addr');
+		}
 	});
 
   // logged-in user homepage //
-
 	app.get('/home', function(req, res) {
 		if (req.session.user == null){
 			// if user is not logged-in redirect back to login page //
