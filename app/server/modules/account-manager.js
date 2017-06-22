@@ -1,5 +1,6 @@
 var crypto 		= require('crypto');
 var moment 		= require('moment');
+var JWT = require('jsonwebtoken');
 var envConfig = require('./../../../config');
 var accounts = require('./db-connection').accounts;
 var dbApi = require('./db-api');
@@ -14,6 +15,29 @@ exports.autoLogin = function(user, pass, callback)
 			callback(null);
 		}
 	});
+}
+
+exports.autoLoginByToken = function(userId, token, callback)
+{
+
+	JWT.verify(token,
+		envConfig.tokenEncryptionKey,
+		{ audience: envConfig.appName, issuer: envConfig.appName },
+		function(err, loginToken) {
+		if (err) {
+			callback(err,null);
+		}
+		else {
+			if (userId != loginToken.user ) {
+				callback('not login',null);
+			}
+			else {
+				let jwtToken = JWT.sign({ user: loginToken.user }, envConfig.tokenEncryptionKey, { expiresIn: envConfig.defaultTokenDuration,issuer: envConfig.appName, audience: envConfig.appName  });
+				callback(null, jwtToken);
+			}
+		}
+	});
+
 }
 
 exports.manualLogin = function(user, pass, callback)

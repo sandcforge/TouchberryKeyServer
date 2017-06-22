@@ -1,8 +1,9 @@
-
+var envConfig = require('./../../config');
 var CT = require('./modules/country-list');
 var AM = require('./modules/account-manager');
 var TM = require('./modules/theme-manager');
 var EM = require('./modules/email-dispatcher');
+var JWT = require('jsonwebtoken');
 
 module.exports = function(app) {
 
@@ -15,7 +16,7 @@ module.exports = function(app) {
 	// attempt automatic login //
 			AM.autoLogin(req.cookies.user, req.cookies.pass, function(o){
 				if (o != null){
-				    req.session.user = o;
+				  req.session.user = o;
 					res.redirect('/home');
 				}	else{
 					res.render('login', { title: 'Hello - Please Login To Your Account' });
@@ -30,10 +31,10 @@ module.exports = function(app) {
 				res.status(400).send(e);
 			}	else{
 				req.session.user = o;
-				if (req.body['remember-me'] == 'true'){
-					res.cookie('user', o.user, { maxAge: 900000 });
-					res.cookie('pass', o.pass, { maxAge: 900000 });
-				}
+
+				let jwtToken = JWT.sign({ user: o._id }, envConfig.tokenEncryptionKey, { expiresIn: envConfig.defaultTokenDuration,issuer: envConfig.appName, audience: envConfig.appName  });
+				console.log(jwtToken);
+				res.cookie('loginToken', jwtToken, { maxAge: 900000 });
 				res.status(200).send(o);
 			}
 		});
@@ -42,28 +43,38 @@ module.exports = function(app) {
 
 	app.post('/theme/post', function(req, res){
 
+		let loginToken = req.cookies.loginToken;
 		// check if the user's credentials are saved in a cookie //
-			if (req.cookies.user == undefined || req.cookies.pass == undefined){
-				res.status(400).send('not login');
-			}	else{
-				// attempt automatic login //
-				AM.autoLogin(req.cookies.user, req.cookies.pass, function(o){
-					if (o != null){
-							req.session.user = o;
-							req.body.owner = o._id;
-							//console.log(req.body);
-							TM.addNewTheme(req.body, function(e, o){
-					      if (!o){
-					        res.status(400).send(e);
-					      }	else{
-					        res.status(200).send(o);
-					      }
-						  });
-					}	else{
+		if (loginToken == undefined ){
+			res.status(400).send('not login');
+		}	else{
+			// attempt automatic login //
+			if (req.body == undefined || req.body.owner == undefined) {
+				res.status(400).send('invalid theme');
+			}
+			else {
+
+				AM.autoLoginByToken(req.body.owner, loginToken, function(err, newToken){
+					if (err) {
 						res.status(400).send('not login');
 					}
+					else {
+						//console.log(loginToken);
+
+						TM.addNewTheme(req.body, function(e, o){
+							if (!o){
+								res.status(400).send(e);
+							}	else{
+								res.cookie('loginToken', newToken, { maxAge: 900000 });
+								res.status(200).send(o);
+							}
+						});
+					}
 				});
+
 			}
+		}
+
 	});
 
 	//e.g. http://localhost/theme/get?addr=123435t
@@ -110,8 +121,10 @@ module.exports = function(app) {
 					req.session.user = o;
 			// update the user's login cookies if they exists //
 					if (req.cookies.user != undefined && req.cookies.pass != undefined){
+						/*FIXME: should change to loginToken
 						res.cookie('user', o.user, { maxAge: 900000 });
 						res.cookie('pass', o.pass, { maxAge: 900000 });
+						*/
 					}
 					res.status(200).send('ok');
 				}
@@ -120,8 +133,10 @@ module.exports = function(app) {
 	});
 
 	app.post('/logout', function(req, res){
+		/*FIXME: should change to loginToken
 		res.clearCookie('user');
 		res.clearCookie('pass');
+		*/
 		req.session.destroy(function(e){ res.status(200).send('ok'); });
 	})
 
@@ -209,8 +224,10 @@ module.exports = function(app) {
 	app.post('/delete', function(req, res){
 		AM.deleteAccount(req.body.id, function(e, obj){
 			if (!e){
+				/*FIXME: should change to loginToken
 				res.clearCookie('user');
 				res.clearCookie('pass');
+				*/
 				req.session.destroy(function(e){ res.status(200).send('ok'); });
 			}	else{
 				res.status(400).send('record not found');

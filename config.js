@@ -35,7 +35,10 @@ envConfig = {
   dbUser:    dbUser,
   dbPass:    dbPass,
 	dbURL:     dbURL,
-	defaultThemeDuration: 3 //3 days
+	defaultThemeDuration: 3, //3 days
+	defaultTokenDuration: 3 * 24 * 60 * 60, //3 days unit: s
+	tokenEncryptionKey: 'MTU123!@#',
+	appName: 'touchberrykey',
 }
 
 module.exports = envConfig;
