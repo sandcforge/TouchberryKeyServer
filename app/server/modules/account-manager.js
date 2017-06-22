@@ -17,24 +17,19 @@ exports.autoLogin = function(user, pass, callback)
 	});
 }
 
-exports.autoLoginByToken = function(userId, token, callback)
+exports.autoLoginByToken = function(jwtToken, callback)
 {
 
-	JWT.verify(token,
+	JWT.verify(jwtToken,
 		envConfig.tokenEncryptionKey,
 		{ audience: envConfig.appName, issuer: envConfig.appName },
 		function(err, loginToken) {
 		if (err) {
-			callback(err,null);
+			callback(err,null,null);
 		}
 		else {
-			if (userId != loginToken.user ) {
-				callback('not login',null);
-			}
-			else {
-				let jwtToken = JWT.sign({ user: loginToken.user }, envConfig.tokenEncryptionKey, { expiresIn: envConfig.defaultTokenDuration,issuer: envConfig.appName, audience: envConfig.appName  });
-				callback(null, jwtToken);
-			}
+				let reNewJwtToken = JWT.sign({ user: loginToken.user }, envConfig.tokenEncryptionKey, { expiresIn: envConfig.defaultTokenDuration,issuer: envConfig.appName, audience: envConfig.appName  });
+				callback(null, reNewJwtToken,loginToken.user);
 		}
 	});
 

@@ -19,7 +19,7 @@ exports.getTheme = function(id, callback)
 		if (e) callback(e);
 		else {
 			let currentTime = moment();
-			let themeTime = moment(o.timestamp);
+			let themeTime = moment(o.timestamp,'MM-DD-YYYY HH:mm:ss');
 			let themeDuration = o.duration || envConfig.defaultThemeDuration;
 			if ( currentTime.diff(themeTime, 'days') > themeDuration ) callback('theme expired');
 			else callback(null,o);

@@ -54,21 +54,26 @@ module.exports = function(app) {
 			}
 			else {
 
-				AM.autoLoginByToken(req.body.owner, loginToken, function(err, newToken){
+				AM.autoLoginByToken(loginToken, function(err, newToken, userId){
 					if (err) {
 						res.status(400).send('not login');
 					}
 					else {
-						//console.log(loginToken);
-
-						TM.addNewTheme(req.body, function(e, o){
-							if (!o){
-								res.status(400).send(e);
-							}	else{
-								res.cookie('loginToken', newToken, { maxAge: 900000 });
-								res.status(200).send(o);
-							}
-						});
+						if (req.body == undefined ||
+							  req.body.owner == undefined ||
+								req.body.owner != userId ) {
+									res.status(400).send('invalid theme');
+								}
+						else {
+							TM.addNewTheme(req.body, function(e, o){
+								if (!o){
+									res.status(400).send(e);
+								}	else{
+									res.cookie('loginToken', newToken, { maxAge: 900000 });
+									res.status(200).send(o);
+								}
+							});
+						}
 					}
 				});
 
