@@ -8,7 +8,7 @@ var JWT = require('jsonwebtoken');
 module.exports = function(app) {
 
   // main login page //
-	app.get('/', function(req, res){
+	app.get('/api', function(req, res){
 	// attempt automatic login //
 		AM.autoLoginByToken(req.cookies.loginToken, function(e,renewJwtToken,userId){
 			if (e) {
@@ -16,25 +16,25 @@ module.exports = function(app) {
 			}
 			else {
 				res.cookie('loginToken', renewJwtToken, { maxAge: 900000 });
-				res.redirect('/home');
+				res.redirect('/api/home');
 			}
 		});
 	});
 
-	app.post('/', function(req, res){
+	app.post('/api', function(req, res){
 		AM.manualLogin(req.body['user'], req.body['pass'], function(e, o){
 			if (!o){
 				res.status(400).send(e);
 			}	else{
 				let jwtToken = JWT.sign({ user: o._id }, envConfig.tokenEncryptionKey, { expiresIn: envConfig.defaultTokenDuration,issuer: envConfig.appName, audience: envConfig.appName  });
 				res.cookie('loginToken', jwtToken, { maxAge: 900000 });
-				res.redirect('/home');
+				res.redirect('/api/home');
 			}
 		});
 	});
 
 
-	app.post('/theme/post', function(req, res){
+	app.post('/api/theme/post', function(req, res){
 
 		let loginToken = req.cookies.loginToken;
 		// check if the user's credentials are saved in a cookie //
@@ -76,7 +76,7 @@ module.exports = function(app) {
 	});
 
 	//e.g. http://localhost/theme/get?addr=123435t
-	app.get('/theme/get', function(req, res){
+	app.get('/api/theme/get', function(req, res){
 		if (req.query.addr) {
 			TM.getTheme(req.query.addr, function(e,o) {
 				if (!e) res.status(200).send(o);
@@ -89,7 +89,7 @@ module.exports = function(app) {
 	});
 
   // logged-in user homepage //
-	app.get('/home', function(req, res) {
+	app.get('/api/home', function(req, res) {
 		AM.autoLoginByToken(req.cookies.loginToken, function(e,renewJwtToken,userId){
 			if (e) {
 					res.render('login', { title: 'Hello - Please Login To Your Account' });
@@ -112,10 +112,10 @@ module.exports = function(app) {
 		});
 	});
 
-	app.post('/home', function(req, res){
+	app.post('/api/home', function(req, res){
 		AM.autoLoginByToken(req.cookies.loginToken, function(e,renewJwtToken,userId){
 			if (e) {
-					res.redirect('/');
+					res.redirect('/api');
 			}
 			else {
 				res.cookie('loginToken', renewJwtToken, { maxAge: 900000 });
@@ -138,18 +138,18 @@ module.exports = function(app) {
 
 	});
 
-	app.post('/logout', function(req, res){
+	app.post('/api/logout', function(req, res){
 		res.clearCookie('loginToken');
 		res.status(200).send('ok');
 	})
 
 // creating new accounts //
 
-	app.get('/signup', function(req, res) {
+	app.get('/api/signup', function(req, res) {
 		res.render('signup', {  title: 'Signup', countries : CT });
 	});
 
-	app.post('/signup', function(req, res){
+	app.post('/api/signup', function(req, res){
 		AM.addNewAccount({
 			name 	: req.body['name'],
 			email 	: req.body['email'],
@@ -167,7 +167,7 @@ module.exports = function(app) {
 
   // password reset //
 
-	app.post('/lost-password', function(req, res){
+	app.post('/api/lost-password', function(req, res){
 		// look up the user's account via their email //
 		AM.getAccountByEmail(req.body['email'], function(user){
 			if (user){
@@ -195,13 +195,13 @@ module.exports = function(app) {
 
   // view & delete accounts //
 
-	app.get('/print', function(req, res) {
+	app.get('/api/print', function(req, res) {
 		AM.getAllRecords( function(e, accounts){
 			res.render('print', { title : 'Account List', accts : accounts });
 		})
 	});
 
-	app.post('/delete', function(req, res){
+	app.post('/api/delete', function(req, res){
 		AM.deleteAccount(req.body.id, function(e, obj){
 			if (!e){
 				res.clearCookie('loginToken');
@@ -211,14 +211,14 @@ module.exports = function(app) {
 	    });
 	});
 
-	app.get('/reset', function(req, res) {
+	app.get('/api/reset', function(req, res) {
 		AM.delAllRecords(function(){
-			res.redirect('/print');
+			res.redirect('/api/print');
 		});
 	});
 
 
-	app.get('/index', function(req, res) {
+	app.get('/', function(req, res) {
 		res.render('pages/MainPage', { title: 'Express', foo: {userAgent: req.headers['user-agent'] } });
 	});
 

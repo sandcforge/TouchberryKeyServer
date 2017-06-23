@@ -31,9 +31,8 @@ app.use(express.static(__dirname + '/app/public'));
 
 function approveDomains(opts, certs, cb) {
   if (certs) {
-    opts.domains = ['key.touchberry.net',
-                    'www.touchberry.net',
-                    'touchberry.net',
+    opts.domains = ['touchberrykey.com',
+                    'www.touchberrykey.com',
                     'www.touchberrykey.ga',
                     'touchberrykey.ga'];
   }
@@ -61,9 +60,6 @@ else {
 	}
 }
 
-
-
-console.log(envConfig.dbURL);
 
 require('./app/server/routes')(app);
 if ( process.env.NODE_ENV == 'prod') {

@@ -1,8 +1,8 @@
 
 $(document).ready(function(){
-	
+
 	var rv = new ResetValidator();
-	
+
 	$('#set-password-form').ajaxForm({
 		beforeSubmit : function(formData, jqForm, options){;
 			rv.hideAlert();
@@ -14,7 +14,7 @@ $(document).ready(function(){
 		},
 		success	: function(responseText, status, xhr, $form){
 			rv.showSuccess("Your password has been reset.");
-			setTimeout(function(){ window.location.href = '/'; }, 3000);
+			setTimeout(function(){ window.location.href = '/api'; }, 3000);
 		},
 		error : function(){
 			rv.showAlert("I'm sorry something went wrong, please try again.");

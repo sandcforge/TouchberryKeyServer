@@ -10,7 +10,7 @@ let dbUser;
 let dbPass;
 let dbURL;
 if (dbEnv == 'mongodb.atlas') {
-	dbHost = process.env.DB_HOST || 'cluster0-shard-00-00-smsp4.mongodb.net';
+	dbHost = process.env.DB_HOST || 'cluster0-shard-00-02-smsp4.mongodb.net';
 	dbUser = process.env.DB_USER || 'touchberry';
 	dbPass = process.env.DB_PASS || 'touchberry!';
 	dbURL = 'mongodb://'+ dbUser +':'+dbPass+'@'+ dbHost +':'+ dbPort + '/' + dbName + '?ssl=true&replicaSet=Cluster0-shard-0&authSource=admin';

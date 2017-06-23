@@ -18,7 +18,7 @@ function HomeController()
 		$('.modal-confirm').modal('hide');
 		var that = this;
 		$.ajax({
-			url: '/delete',
+			url: '/api/delete',
 			type: 'POST',
 			data: { id: $('#userId').val()},
 			success: function(data){
@@ -34,7 +34,7 @@ function HomeController()
 	{
 		var that = this;
 		$.ajax({
-			url: "/logout",
+			url: "/api/logout",
 			type: "POST",
 			data: {logout : true},
 			success: function(data){
@@ -51,8 +51,8 @@ function HomeController()
 		$('.modal-alert .modal-header h4').text('Success!');
 		$('.modal-alert .modal-body p').html(msg);
 		$('.modal-alert').modal('show');
-		$('.modal-alert button').click(function(){window.location.href = '/';})
-		setTimeout(function(){window.location.href = '/';}, 3000);
+		$('.modal-alert button').click(function(){window.location.href = '/api';})
+		setTimeout(function(){window.location.href = '/api';}, 3000);
 	}
 }
 
