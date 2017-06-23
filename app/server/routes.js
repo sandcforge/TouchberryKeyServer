@@ -222,6 +222,16 @@ module.exports = function(app) {
 		res.render('pages/MainPage', { title: 'Express', foo: {userAgent: req.headers['user-agent'] } });
 	});
 
+	app.get('/apple-app-site-association', function(req, res) {
+		res.download('apple-app-site-association');
+	});
+
+	app.get('/.well-known/apple-app-site-association', function(req, res) {
+		res.download('apple-app-site-association');
+	});
+
+
+
 	app.get('/about', function(req, res) {
 		res.render('pages/PrivacyPolicyPage', { title: 'Express', foo: {userAgent: req.headers['user-agent'] } });
 	});
