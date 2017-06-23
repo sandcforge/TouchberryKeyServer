@@ -19,7 +19,6 @@ exports.autoLogin = function(user, pass, callback)
 
 exports.autoLoginByToken = function(jwtToken, callback)
 {
-
 	JWT.verify(jwtToken,
 		envConfig.tokenEncryptionKey,
 		{ audience: envConfig.appName, issuer: envConfig.appName },
@@ -28,8 +27,8 @@ exports.autoLoginByToken = function(jwtToken, callback)
 			callback(err,null,null);
 		}
 		else {
-				let reNewJwtToken = JWT.sign({ user: loginToken.user }, envConfig.tokenEncryptionKey, { expiresIn: envConfig.defaultTokenDuration,issuer: envConfig.appName, audience: envConfig.appName  });
-				callback(null, reNewJwtToken,loginToken.user);
+			let reNewJwtToken = JWT.sign({ user: loginToken.user }, envConfig.tokenEncryptionKey, { expiresIn: envConfig.defaultTokenDuration,issuer: envConfig.appName, audience: envConfig.appName  });
+			callback(null, reNewJwtToken,loginToken.user);
 		}
 	});
 
@@ -113,6 +112,10 @@ exports.updatePassword = function(email, newPass, callback)
 	});
 }
 
+exports.getRandomPassword = function () {
+	return md5(generateSalt())
+}
+
 /* account lookup methods */
 
 exports.deleteAccount = function(id, callback)
@@ -124,6 +127,12 @@ exports.getAccountByEmail = function(email, callback)
 {
 	accounts.findOne({email:email}, function(e, o){ callback(o); });
 }
+
+exports.getAccountById = function(id, callback)
+{
+	accounts.findOne({_id:dbApi.getObjectId(id)}, function(e, o){ callback(o); });
+}
+
 
 exports.validateResetLink = function(email, passHash, callback)
 {

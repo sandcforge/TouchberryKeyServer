@@ -25,9 +25,13 @@ else {
 
 
 envConfig = {
-  httpPort:  process.env.HTTP_PORT || 80,
-  httpsPort: process.env.HTTPS_PORT || 443,
-  nodeEnv:   process.env.NODE_ENV,
+  httpPort:   process.env.HTTP_PORT || 80,
+  httpsPort:  process.env.HTTPS_PORT || 443,
+  nodeEnv:    process.env.NODE_ENV,
+	emailHost:  process.env.EMAIL_HOST || 'smtp.gmail.com',
+	emailUser:  process.env.EMAIL_USER || 'touchberrykey@gmail.com',
+	emailPass:  process.env.EMAIL_PASS || 'Mtu.2015Dota',
+	emailFrom:  process.env.EMAIL_FROM || 'TouchberryKey',
   dbEnv:     dbEnv,
   dbHost:    dbHost,
   dbPort:    dbPort,
