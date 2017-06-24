@@ -6,17 +6,6 @@ var accounts = require('./db-connection').accounts;
 var dbApi = require('./db-api');
 /* login validation methods */
 
-exports.autoLogin = function(user, pass, callback)
-{
-	accounts.findOne({user:user}, function(e, o) {
-		if (o){
-			o.pass == pass ? callback(o) : callback(null);
-		}	else{
-			callback(null);
-		}
-	});
-}
-
 exports.autoLoginByToken = function(jwtToken, callback)
 {
 	JWT.verify(jwtToken,
@@ -24,7 +13,7 @@ exports.autoLoginByToken = function(jwtToken, callback)
 		{ audience: envConfig.appName, issuer: envConfig.appName },
 		function(err, loginToken) {
 		if (err) {
-			callback(err,null,null);
+			callback(`err code ${envConfig.errCode.invalidLoginToken}`,null,null);
 		}
 		else {
 			let reNewJwtToken = JWT.sign({ user: loginToken.user }, envConfig.tokenEncryptionKey, { expiresIn: envConfig.defaultTokenDuration,issuer: envConfig.appName, audience: envConfig.appName  });
@@ -38,13 +27,13 @@ exports.manualLogin = function(user, pass, callback)
 {
 	accounts.findOne({user:user}, function(e, o) {
 		if (o == null){
-			callback('user-not-found');
+			callback(`err code ${envConfig.errCode.userNotFound}`);
 		}	else{
 			validatePassword(pass, o.pass, function(err, res) {
 				if (res){
 					callback(null, o);
 				}	else{
-					callback('invalid-password');
+					callback(`err code ${envConfig.errCode.invalidPassword}`);
 				}
 			});
 		}
@@ -57,11 +46,11 @@ exports.addNewAccount = function(newData, callback)
 {
 	accounts.findOne({user:newData.user}, function(e, o) {
 		if (o){
-			callback('username-taken');
+			callback(`err code ${envConfig.errCode.userTaken}`);
 		}	else{
 			accounts.findOne({email:newData.email}, function(e, o) {
 				if (o){
-					callback('email-taken');
+					callback(`err code ${envConfig.errCode.emailTaken}`);
 				}	else{
 					saltAndHash(newData.pass, function(hash){
 						newData.pass = hash;
@@ -83,14 +72,14 @@ exports.updateAccount = function(newData, callback)
 		o.country 	= newData.country;
 		if (newData.pass == ''){
 			accounts.save(o, {safe: true}, function(e) {
-				if (e) callback(e);
+				if (e) callback(`err code ${envConfig.errCode.updateAccountFailure}`);
 				else callback(null, o);
 			});
 		}	else{
 			saltAndHash(newData.pass, function(hash){
 				o.pass = hash;
 				accounts.save(o, {safe: true}, function(e) {
-					if (e) callback(e);
+					if (e) callback(`err code ${envConfig.errCode.updateAccountFailure}`);
 					else callback(null, o);
 				});
 			});
@@ -102,7 +91,7 @@ exports.updatePassword = function(email, newPass, callback)
 {
 	accounts.findOne({email:email}, function(e, o){
 		if (e){
-			callback(e, null);
+			callback((`err code ${envConfig.errCode.invalidEmail}`), null);
 		}	else{
 			saltAndHash(newPass, function(hash){
 		        o.pass = hash;

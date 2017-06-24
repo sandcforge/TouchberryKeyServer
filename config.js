@@ -23,6 +23,24 @@ else {
 	dbURL = 'mongodb://'+dbHost+':'+dbPort+'/'+dbName;
 }
 
+errCode = {
+	undefinedLoginToken: 1,
+	invalidTheme: 2,
+	invalidLoginToken :3,
+	noThemeId: 4,
+	unkownUser: 5,
+	updateAccountFailure: 6,
+	updatePasswordFailure: 7,
+	emailNotFound : 8,
+	wrongPassword : 9,
+	userNotFound : 10,
+	invalidPassword: 11,
+	userTaken: 12,
+	emailTaken: 13,
+	addNewThemeFailure: 14,
+	expiredTheme: 15,
+	saveThemeFailure: 16,
+};
 
 envConfig = {
   httpPort:   process.env.HTTP_PORT || 80,
@@ -43,6 +61,7 @@ envConfig = {
 	defaultTokenDuration: 3 * 24 * 60 * 60, //3 days unit: s
 	tokenEncryptionKey: 'MTU123!@#',
 	appName: 'touchberrykey',
+	errCode: errCode,
 }
 
 module.exports = envConfig;

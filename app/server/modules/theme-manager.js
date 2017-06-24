@@ -8,7 +8,7 @@ exports.addNewTheme = function(newData, callback)
 {
 	newData.timestamp = moment().format('MM-DD-YYYY HH:mm:ss');
 	themes.insert(newData, function(e,ret) {
-		if (e) callback(e, null);
+		if (e) callback(`err code ${envConfig.errCode.addNewThemeFailure}`);
 		else callback(null, ret.insertedIds);
 	});
 }
@@ -16,12 +16,12 @@ exports.addNewTheme = function(newData, callback)
 exports.getTheme = function(id, callback)
 {
 	themes.findOne({_id:dbApi.getObjectId(id)}, function(e, o){
-		if (e) callback(e);
+		if (e) callback(`err code ${envConfig.errCode.invalidTheme}`);
 		else {
 			let currentTime = moment();
 			let themeTime = moment(o.timestamp,'MM-DD-YYYY HH:mm:ss');
 			let themeDuration = o.duration || envConfig.defaultThemeDuration;
-			if ( currentTime.diff(themeTime, 'days') > themeDuration ) callback('theme expired');
+			if ( currentTime.diff(themeTime, 'days') > themeDuration ) callback(`err code ${envConfig.errCode.expiredTheme}`);
 			else callback(null,o);
 		}
 	});
@@ -36,7 +36,7 @@ exports.updateTheme = function(newData, callback)
 			o.pass 	= newData.pass;
 			o.timestamp  = moment().format('MMMM Do YYYY, h:mm:ss a');
 			themes.save(o, {safe: true}, function(e) {
-					if (e) callback(e);
+					if (e) callbac(`err code ${envConfig.errCode.saveThemeFailure}`);
 					else callback(null, o);
 				});
 		}

@@ -39,24 +39,21 @@ module.exports = function(app) {
 		let loginToken = req.cookies.loginToken;
 		// check if the user's credentials are saved in a cookie //
 		if (loginToken == undefined ){
-			res.status(400).send('not login');
+			res.status(400).send(`err code ${envConfig.errCode.undefinedLoginToken}`);
 		}	else{
 			// attempt automatic login //
 			if (req.body == undefined || req.body.owner == undefined) {
-				res.status(400).send('invalid theme');
+				res.status(400).send(`err code ${envConfig.errCode.invalidTheme}`);
 			}
 			else {
-
 				AM.autoLoginByToken(loginToken, function(err, newToken, userId){
 					if (err) {
-						res.status(400).send('not login');
+						res.status(400).send(`err code ${err}`);
 					}
 					else {
-						if (req.body == undefined ||
-							  req.body.owner == undefined ||
-								req.body.owner != userId ) {
-									res.status(400).send('invalid theme');
-								}
+						if (req.body.owner != userId ) {
+									res.status(400).send(`err code ${envConfig.errCode.invalidLoginToken}`);
+						}
 						else {
 							TM.addNewTheme(req.body, function(e, o){
 								if (!o){
@@ -84,7 +81,7 @@ module.exports = function(app) {
 			});
 		}
 		else {
-			res.status(400).send('null addr');
+			res.status(400).send(`err code ${envConfig.errCode.noThemeId}`);
 		}
 	});
 
@@ -105,7 +102,7 @@ module.exports = function(app) {
 						});
 					}
 					else {
-							res.status(400).send('error user');
+							res.status(400).send(`err code ${envConfig.errCode.unkownUser}`);
 					}
 				});
 			}
@@ -127,7 +124,7 @@ module.exports = function(app) {
 					country	: req.body['country']
 					}, function(e, o){
 					if (e){
-						res.status(400).send('error-updating-account');
+						res.status(400).send(`err code ${envConfig.errCode.updateAccountFailure}`);
 					}	else{
 						res.status(200).send('ok');
 					}
@@ -183,12 +180,12 @@ module.exports = function(app) {
 							}
 						});
 					}	else{
-						res.status(400).send('unable to update password');
+						res.status(400).send(`err code ${envConfig.errCode.updatePasswordFailure}`);
 					}
 				});
 
 			}	else{
-				res.status(400).send('email-not-found');
+				res.status(400).send(`err code ${envConfig.errCode.emailNotFound}`);
 			}
 		});
 	});
@@ -206,7 +203,7 @@ module.exports = function(app) {
 			if (!e){
 				res.clearCookie('loginToken');
 			}	else{
-				res.status(400).send('record not found');
+				res.status(400).send(e);
 			}
 	    });
 	});
