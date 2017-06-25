@@ -10,16 +10,20 @@ let dbUser;
 let dbPass;
 let dbURL;
 if (dbEnv == 'mongodb.atlas') {
-	dbHost = process.env.DB_HOST || 'cluster0-shard-00-02-smsp4.mongodb.net';
+	dbHost0 = process.env.DB_HOST0 || 'cluster0-shard-00-00-smsp4.mongodb.net';
+	dbHost1 = process.env.DB_HOST1 || 'cluster0-shard-00-01-smsp4.mongodb.net';
+	dbHost2 = process.env.DB_HOST2 || 'cluster0-shard-00-02-smsp4.mongodb.net';
 	dbUser = process.env.DB_USER || 'touchberry';
 	dbPass = process.env.DB_PASS || 'touchberry!';
-	dbURL = 'mongodb://'+ dbUser +':'+dbPass+'@'+ dbHost +':'+ dbPort + '/' + dbName + '?ssl=true&replicaSet=Cluster0-shard-0&authSource=admin';
+	//dbURL = 'mongodb://'+ dbUser +':'+dbPass+'@'+ dbHost +':'+ dbPort + '/' + dbName + '?ssl=true&replicaSet=Cluster0-shard-0&authSource=admin';
+	dbURL = `mongodb://${dbUser}:${dbPass}@${dbHost0}:${dbPort},${dbHost1}:${dbPort},${dbHost2}:${dbPort}/${dbName}?ssl=true&replicaSet=Cluster0-shard-0&authSource=admin`;
+
 
 }
 else {
   dbUser = null;
   dbPass = null;
-  dbHost = process.env.DB_HOST || 'localhost';
+  dbHost = process.env.DB_HOST0 || 'localhost';
 	dbURL = 'mongodb://'+dbHost+':'+dbPort+'/'+dbName;
 }
 

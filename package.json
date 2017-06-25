@@ -25,6 +25,7 @@
     "material-ui": "^0.18.3",
     "moment": "2.10.3",
     "mongodb": "^2.2.28",
+    "mongojs": "^2.4.0",
     "npm": "^5.0.3",
     "nuka-carousel": "^2.0.4",
     "react": "^15.6.1",
