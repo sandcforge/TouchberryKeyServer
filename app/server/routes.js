@@ -1,4 +1,5 @@
 var envConfig = require('./../../config');
+var fs = require('fs');
 var CT = require('./modules/country-list');
 var AM = require('./modules/account-manager');
 var TM = require('./modules/theme-manager');
@@ -220,11 +221,17 @@ module.exports = function(app) {
 	});
 
 	app.get('/apple-app-site-association', function(req, res) {
-		res.download('apple-app-site-association');
+		let aasa = fs.readFileSync(__dirname + '/../../apple-app-site-association');
+		res.set('Content-Type', 'application/pkcs7-mime');
+		res.status(200).send(aasa);
 	});
 
 	app.get('/.well-known/apple-app-site-association', function(req, res) {
-		res.download('apple-app-site-association');
+		let aasa = fs.readFileSync(__dirname + '/../../apple-app-site-association');
+		res.set('Content-Type', 'application/pkcs7-mime');
+		res.status(200).send(aasa);
+		//res.status(200).download('apple-app-site-association');
+		//res.status(200).send('ok');
 	});
 
 
