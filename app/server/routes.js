@@ -222,13 +222,13 @@ module.exports = function(app) {
 
 	app.get('/apple-app-site-association', function(req, res) {
 		let aasa = fs.readFileSync(__dirname + '/../../apple-app-site-association');
-		res.set('Content-Type', 'application/pkcs7-mime');
+		res.set('Content-Type', 'application/json');
 		res.status(200).send(aasa);
 	});
 
 	app.get('/.well-known/apple-app-site-association', function(req, res) {
 		let aasa = fs.readFileSync(__dirname + '/../../apple-app-site-association');
-		res.set('Content-Type', 'application/pkcs7-mime');
+		res.set('Content-Type', 'application/json');
 		res.status(200).send(aasa);
 		//res.status(200).download('apple-app-site-association');
 		//res.status(200).send('ok');

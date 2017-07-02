@@ -4,7 +4,7 @@
         "details": [
             {
                 "appID": "4R2Z9WUYWQ.com.touchberry.stickerkeyboard",
-                "paths": [ "/"]
+                "paths": [ "*"]
             }
         ]
     }
